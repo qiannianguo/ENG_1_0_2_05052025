@@ -1,0 +1,15 @@
+../Core/Src/main_tasks.c:63:9:prime_mode_task	16	static
+../Core/Src/main_tasks.c:121:9:pre_run_check_task	32	static
+../Core/Src/main_tasks.c:159:9:test_if_set_ready_task	40	static
+../Core/Src/main_tasks.c:224:9:service_page_one_task	32	static
+../Core/Src/main_tasks.c:302:9:service_page_two_task	48	static
+../Core/Src/main_tasks.c:375:9:service_page_three_task	40	static
+../Core/Src/main_tasks.c:444:9:set_water_rate_task	24	static
+../Core/Src/main_tasks.c:497:9:set_dose_limit_task	24	static
+../Core/Src/main_tasks.c:558:9:clear_rates_task	16	static
+../Core/Src/main_tasks.c:612:9:hold_mode_task	40	static
+../Core/Src/main_tasks.c:1095:9:swap_bolus_to_formula	16	static
+../Core/Src/main_tasks.c:1119:9:swap_formula_to_bolus	8	static
+../Core/Src/main_tasks.c:774:9:run_mode_task	304	static
+../Core/Src/main_tasks.c:1133:9:MCU_off_task	72	static
+../Core/Src/main_tasks.c:1195:9:remove_set_task	80	static

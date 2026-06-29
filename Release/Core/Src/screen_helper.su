@@ -1,0 +1,5 @@
+../Core/Src/screen_helper.c:28:6:draw_batt_symbol	8	static
+../Core/Src/screen_helper.c:69:6:draw_flow_indicator	8	static
+../Core/Src/screen_helper.c:122:10:screen_touched	8	static
+../Core/Src/screen_helper.c:142:6:set_fgcolor_for	8	static
+../Core/Src/screen_helper.c:157:6:toggle_dsp_brightness	8	static

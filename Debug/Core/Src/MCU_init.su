@@ -1,0 +1,14 @@
+../Core/Src/MCU_init.c:69:6:delay_us	16	static
+../Core/Src/MCU_init.c:82:6:MCU_peripheral_init	24	static
+../Core/Src/MCU_init.c:140:6:SystemClock_Config	136	static
+../Core/Src/MCU_init.c:205:13:MX_ADC_Init	16	static
+../Core/Src/MCU_init.c:301:13:MX_DAC_Init	16	static
+../Core/Src/MCU_init.c:341:13:MX_I2C3_Init	8	static
+../Core/Src/MCU_init.c:389:13:MX_SPI1_Init	8	static
+../Core/Src/MCU_init.c:427:13:MX_TIM22_Init	32	static
+../Core/Src/MCU_init.c:472:13:MX_TIM3_Init	32	static
+../Core/Src/MCU_init.c:517:13:MX_TIM21_Init	32	static
+../Core/Src/MCU_init.c:575:13:MX_USART2_UART_Init	8	static
+../Core/Src/MCU_init.c:626:13:MX_GPIO_Init	56	static
+../Core/Src/MCU_init.c:731:6:IWDG_Init	8	static
+../Core/Src/MCU_init.c:761:6:Error_Handler	8	static,ignoring_inline_asm
