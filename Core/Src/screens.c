@@ -80,24 +80,16 @@ const uint32_t font0_offset = 0; // Taken from conversion settings in EVE Asset 
 const uint32_t keyright0_offset = 0x3800L;
 const uint32_t keyup0_offset = 0x3a00L;
 const uint32_t keydown0_offset = 0x3c00L;
-
 const uint32_t battery_100_bitmap_offset = 0x3e00L;  // 电池图标地址
-
 const uint32_t plus_bitmap_offset = 0x4000L;  // 加号图标地址
-
 const uint32_t minus_bitmap_offset = 0x4200L;  // 加号图标地址
-
 const uint32_t rightarrow_bitmap_offset = 0x4400L;  // 加号图标地址
-
 const uint32_t unlock_bitmap_offset = 0x4600L;  // 加号图标地址
-
 const uint32_t battery_080_bitmap_offset = 0x4800L;  // 80% 电量
 const uint32_t battery_060_bitmap_offset = 0x4a00L;  // 60% 电量
 const uint32_t battery_040_bitmap_offset = 0x4c00L;  // 40% 电量
 const uint32_t battery_020_bitmap_offset = 0x4e00L;  // 20% 电量
-
 const uint32_t start_bitmap_offset = 0x6000L;  // 20% 电量
-
 const uint32_t alarm1_bitmap_offset = 0x6200L;  //1级警报
 const uint32_t bell_bitmap_offset = 0x6400L;   //铃声
 const uint32_t mute_bitmap_offset = 0x6600L;   //静音
@@ -2503,6 +2495,134 @@ uint8_t MCU_off_bar(void)
  * - 包含显示亮度、音量等参数设置
  * - 右箭头按钮返回保持模式
  */
+
+#if USE_HOLD_MODE_NEW_SCREEN
+uint8_t setting_screen_task()
+{
+    uint8_t key;
+    uint16_t timeout_count = 0;
+
+    do {
+    	begin_screen(default_config);
+        EVE_COLOR_RGB(48, 48, 48);  // 灰色
+
+        EVE_BEGIN(EVE_BEGIN_RECTS);
+        EVE_VERTEX2II(0, 0, 0, 0);
+        EVE_VERTEX2II(480, 60, 0, 0);
+
+        EVE_BEGIN(EVE_BEGIN_RECTS);
+        EVE_VERTEX2II(396, 64, 0, 0);
+        EVE_VERTEX2II(480, 272, 0, 0);
+
+        /* 设置文本颜色和选项列表 */
+        EVE_COLOR_RGB(WHITE_COLOR);
+        EVE_CMD_TEXT(80, 20, 29, 0, "SETTINGS ");
+
+        /* 设置文本颜色和标题 */
+        EVE_CMD_TEXT(15, 115, 27, 0, "DISPLAY BRIGHTNESS");
+        EVE_CMD_TEXT(15, 158, 27, 0, "VOLUME - ALARMS");
+        EVE_CMD_TEXT(15, 201, 27, 0, "VOLUME - ANNUNCIATIONS");
+
+        /* 设置选项按钮 */
+        EVE_COLOR_RGB(BLACK_COLOR);
+
+        // 显示亮度设置
+        set_fgcolor_for(G_display_brightness, COLUMN_0);
+        EVE_TAG(DSP_BRG_LOW_TAG);
+        EVE_COLOR_RGB(WHITE_COLOR);
+        EVE_CMD_BUTTON(250,105,60,36,28,256,"LOW");
+        set_fgcolor_for(G_display_brightness, COLUMN_1);
+        EVE_TAG(DSP_BRG_HI_TAG);
+        EVE_COLOR_RGB(WHITE_COLOR);
+        EVE_CMD_BUTTON(320,105,60,36,28,256,"HIGH");
+
+        // 报警音量设置
+        set_fgcolor_for(G_alarm_vol, COLUMN_0);
+        EVE_TAG(ALARM_LOW_TAG);
+        EVE_COLOR_RGB(WHITE_COLOR);
+        EVE_CMD_BUTTON(250,148,60,36,28,256,"LOW");
+        set_fgcolor_for(G_alarm_vol, COLUMN_1);
+        EVE_TAG(ALARM_HI_TAG);
+        EVE_COLOR_RGB(WHITE_COLOR);
+        EVE_CMD_BUTTON(320,148,60,36,28,256,"HIGH");
+
+        // 提示音量设置
+        set_fgcolor_for(G_warning_vol, COLUMN_0);
+        EVE_TAG(ANN_LOW_TAG);
+        EVE_COLOR_RGB(WHITE_COLOR);
+        EVE_CMD_BUTTON(250,191,60,36,28,256,"LOW");
+        set_fgcolor_for(G_warning_vol, COLUMN_1);
+        EVE_TAG(ANN_HI_TAG);
+        EVE_COLOR_RGB(WHITE_COLOR);
+        EVE_CMD_BUTTON(320,191,60,36,28,256,"HIGH");
+
+        EVE_TAG(RIGHT_ARROW_TAG);
+        EVE_COLOR_RGB(48, 48, 48);  // 灰色
+        EVE_BEGIN(EVE_BEGIN_RECTS);
+        EVE_VERTEX2II(396, 118, 0, 0);
+        EVE_VERTEX2II(480, 169, 0, 0);
+
+        EVE_COLOR_RGB(WHITE_COLOR);
+        // 右箭头按钮（退出）
+        draw_right_arrow_22x34(426, 147);
+
+        /* 电池符号显示 */
+        draw_batt_symbol(G_v_battery);
+        end_screen();
+
+        /* 处理用户输入 */
+        key = read_all_keys(&timeout_count);
+
+        switch (key) {
+            case DSP_BRG_LOW_TAG:
+            	G_display_brightness = 0;
+            	HAL_MemWrite8(EVE_REG_PWM_DUTY, 30);
+            	delay_50ms(); // 等待50ms
+            break;
+            case DSP_BRG_HI_TAG:
+            	G_display_brightness = 1;
+            	HAL_MemWrite8(EVE_REG_PWM_DUTY, 60);
+            	delay_50ms(); // 等待50ms
+            	break;
+            case ALARM_LOW_TAG:
+            	G_alarm_vol = 0;
+            	beep_1khz_1sec(G_alarm_vol);
+            	delay_50ms(); // 等待50ms
+            	break;
+            case ALARM_HI_TAG:
+            	G_alarm_vol = 1;
+        		beep_1khz_1sec(G_alarm_vol);
+        		delay_50ms(); // 等待50ms
+        		break;
+            case ANN_LOW_TAG:
+            	G_warning_vol = 0;
+        		beep_1khz_1sec(G_warning_vol);
+        		delay_50ms(); // 等待50ms
+            	break;
+            case ANN_HI_TAG:
+            	G_warning_vol = 1;
+        		beep_1khz_1sec(G_warning_vol);
+        		delay_50ms(); // 等待50ms
+            	break;
+        }
+
+        /* 退出条件处理 */
+        if (key == (RIGHT_ARROW_PRESSED)) key_click();
+        if (key == (RIGHT_ARROW_RELEASED)) {
+            SaveNV_Settings();
+            return HOLD_MODE__TASK;
+        }
+        if (timeout_count > EDIT_SCREENS_TIMEOUT) {
+            SaveNV_Settings();
+            return HOLD_MODE__TASK;
+        }
+
+        /* 50ms延时控制 */
+        delay_50ms(); // 等待50ms
+    } while(1);
+}
+
+#else
 uint8_t setting_screen_task()
 {
     uint8_t key;
@@ -2633,8 +2753,7 @@ uint8_t setting_screen_task()
         delay_50ms(); // 等待50ms
     } while(1);
 }
-
-
+#endif
 /**************************************
  * @brief 特殊字符显示界面
  * @return uint8_t 返回任务代码

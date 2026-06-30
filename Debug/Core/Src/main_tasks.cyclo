@@ -40,7 +40,7 @@
 ../Core/Src/main_tasks.c:2004:13:handle_ultrasonic_control	6
 ../Core/Src/main_tasks.c:2022:23:should_flush	5
 ../Core/Src/main_tasks.c:2050:13:init_run_mode_state	3
-../Core/Src/main_tasks.c:2087:13:start_pump_sequence	12
+../Core/Src/main_tasks.c:2087:13:start_pump_sequence	13
 ../Core/Src/main_tasks.c:2099:13:update_display	3
 ../Core/Src/main_tasks.c:2124:16:handle_key_input	1
 ../Core/Src/main_tasks.c:2134:16:process_key_actions	18
@@ -58,14 +58,14 @@
 ../Core/Src/main_tasks.c:2936:16:check_and_process_hourly_dose	13
 ../Core/Src/main_tasks.c:3016:16:execute_hourly_reset_routine	11
 ../Core/Src/main_tasks.c:3119:13:reset_occlusion_detection_state	3
-../Core/Src/main_tasks.c:3157:13:start_next_hour_pump_cycle	14
+../Core/Src/main_tasks.c:3157:13:start_next_hour_pump_cycle	15
 ../Core/Src/main_tasks.c:3221:16:process_occlusion_detection	2
 ../Core/Src/main_tasks.c:3246:10:get_corrected_one_ml	2
 ../Core/Src/main_tasks.c:3295:13:control_loop_timing	2
 ../Core/Src/main_tasks.c:3304:16:handle_pause	1
 ../Core/Src/main_tasks.c:3322:13:record_pause_params	1
 ../Core/Src/main_tasks.c:3337:13:update_accumulated_work_time	1
-../Core/Src/main_tasks.c:3363:9:swap_bolus_to_formula	14
+../Core/Src/main_tasks.c:3363:9:swap_bolus_to_formula	15
 ../Core/Src/main_tasks.c:3424:9:swap_formula_to_bolus	1
 ../Core/Src/main_tasks.c:3466:9:MCU_off_task	4
 ../Core/Src/main_tasks.c:3496:13:execute_fast_shutdown	1

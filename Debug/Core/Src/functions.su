@@ -11,7 +11,7 @@
 ../Core/Src/functions.c:687:13:handle_pause_hour_end	32	static
 ../Core/Src/functions.c:710:13:handle_pause_restart_motor	40	static
 ../Core/Src/functions.c:725:13:handle_pause_early_complete	16	static
-../Core/Src/functions.c:739:13:check_no_pause_hour_end	32	static
+../Core/Src/functions.c:739:13:check_no_pause_hour_end	24	static
 ../Core/Src/functions.c:778:13:check_pause_hour_end	32	static
 ../Core/Src/functions.c:841:9:occl_test	80	static
 ../Core/Src/functions.c:1004:16:process_occlusion_result	40	static

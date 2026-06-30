@@ -143,6 +143,7 @@ int main(void)
   if (G_cal_status == CAL_OK){
 	menu_no = TEST_IF_SET_READY__TASK;
 
+
   }
   else 	menu_no = HOLD_MODE__TASK;
 

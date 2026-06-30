@@ -645,32 +645,43 @@ typedef enum {
 #define SAFE_MOTOR_INT_FORMULA \
     ({ \
         int32_t _result = BASE_MOTOR_INT_FORMULA; \
-        uint16_t _vol = running_volume; \
-        uint16_t _rate = G_food_rate; \
+        uint16_t _vol = running_volume;  /* 流量值 */ \
+        uint16_t _rate = G_food_rate;    /* 进食速率 */ \
         \
-        if (_vol >= 800) { \
-            int32_t _adjust = 100 - (_vol / 800); \
-            /* vol最大8000，adjust最小90，不会负数 */ \
-            _result = (_result * _adjust) / 100; \
-        } \
-        \
+        /* ========== 1. 速率修正系数 (默认100，表示不调整) ========== */ \
+        int32_t _rate_coef = 100; \
         if (_rate > 200) { \
-            _result = (_result * 97) / 100; \
+            _rate_coef = 97; \
         } else if (_rate >= 125 && _rate <= 200) { \
-            _result =(_result * 99) / 100; \
+            _rate_coef = 98; \
         } else if (_rate >= 32 && _rate < 125) { \
+            /* 注意：这个分支依赖流量 _vol */ \
             if (_vol < _rate * 2) { \
-                _result = BASE_MOTOR_INT_FORMULA ; \
+                _rate_coef = 99;  /* 不调整 */ \
             } else if (_vol > _rate * 2) { \
-            	_result =(_result * 99) / 100; \
+                _rate_coef = 98;   /* 微调 */ \
             } \
             /* _vol == _rate * 2 时不调整 */ \
         } \
-        /* _rate < 50：不调整，直接走默认值 */ \
+        /* 其他情况（_rate < 32）不调整，_rate_coef 保持 100 */ \
         \
-        /* 合理界限：293 ~ 341 */ \
+        /* ========== 2. 流量修正系数 (默认100) ========== */ \
+        int32_t _vol_coef = 100; \
+        if (_vol >= 800) { \
+            _vol_coef = 100 - (_vol / 800); \
+            /* 根据你的注释，vol最大8000，coef最小90，不会负数 */ \
+            if (_vol_coef < 90) _vol_coef = 90; \
+        } \
+        /* _vol < 800 时不调整 */ \
+        \
+        /* ========== 3. 综合计算 ========== */ \
+        _result = (_result * _rate_coef) / 100; \
+        _result = (_result * _vol_coef) / 100; \
+        \
+        /* ========== 4. 限幅 ========== */ \
         if (_result < 290) _result = 290; \
         if (_result > BASE_MOTOR_INT_FORMULA + 14) _result = BASE_MOTOR_INT_FORMULA + 14; \
+        \
         _result; \
     })
 #define MAX_RUNNING_VOLUME  8000

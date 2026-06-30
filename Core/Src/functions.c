@@ -738,7 +738,7 @@ static void handle_pause_early_complete(dynamic_interval_control_t *control, uin
  */
 static void check_no_pause_hour_end(uint16_t *food_volume_increment, dynamic_interval_control_t *control)
 {
-    if (control->current_hour_tests == 4) {
+/*    if (control->current_hour_tests == 4) {
         static uint16_t delay_first_counter = 0;
         if (delay_first_counter < 2) {
         	delay_first_counter++;
@@ -752,7 +752,7 @@ static void check_no_pause_hour_end(uint16_t *food_volume_increment, dynamic_int
             	handle_no_pause_hour_first(food_volume_increment,control);
             }
         }
-    }
+    }*/
 	if (control->current_hour_tests >= 7) {
         static uint16_t delay_counter = 0;
         if (delay_counter < 2) {

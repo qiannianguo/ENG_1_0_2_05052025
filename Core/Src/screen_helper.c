@@ -1793,10 +1793,10 @@ uint16_t screen_touched(void)
 void set_fgcolor_for(uint8_t var_holder,uint8_t column)
 {
 	if (var_holder == column){  //var_holder has selected tag's column number
-		EVE_CMD_FGCOLOR(HIGH_VIS_TEXT_COLOR_24bit); //color for selected tag
+		EVE_CMD_FGCOLOR(0x484848); //color for selected tag
 	}
 	else{
-		EVE_CMD_FGCOLOR(GREEN_COLOR_24bit);  		//non selected tag color
+		EVE_CMD_FGCOLOR(0x000000);  		//non selected tag color
 	}
 }/**  End set_fgcolor_for()  **/
 
