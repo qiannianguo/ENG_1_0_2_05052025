@@ -51,7 +51,7 @@ extern uint8_t G_controls_locked;
 extern volatile time_based_flow_cal_t G_time_cal;
 #if ENABLE_LOW_FLOW_MODE
 extern uint16_t G_low_flow_mode;
-
+extern void init_pause_related_params(void *interval_ctrl);
 #endif
 
 static ScreenConfig default_config = {
@@ -593,6 +593,9 @@ void run_mode_new_screen()
     }
     // 转换为分钟和秒
     uint16_t elapsed_minutes = elapsed / 60000;
+    if(elapsed_minutes >60){
+    	init_pause_related_params(interval_ctrl);
+    }
 
     // 定义静态变量
     static uint32_t first_entry_time = 0;
@@ -640,6 +643,18 @@ void run_mode_new_screen()
 
     // 目标体积值 (3000)
     EVE_CMD_NUMBER(300, 220, 30, 0, G_dose_limit);     // X=355, Y=151
+
+    EVE_CMD_ROMFONT(1, 26);
+
+    EVE_CMD_TEXT(250, 20, 1, 0, "test");
+    EVE_CMD_NUMBER(300, 20, 1, 0, interval_ctrl->current_hour_tests);     // X=355, Y=151
+
+    EVE_CMD_TEXT(380, 20, 1, 0, "usonic");
+    EVE_CMD_NUMBER(440, 20, 1, 0, G_usonic_value);     // X=355, Y=151
+
+    EVE_CMD_TEXT(320, 20, 1, 0, "pd");
+
+    EVE_CMD_NUMBER(350, 20, 1, 0, G_ir_pd2_value);     // X=355, Y=151
 
     /* ========== 按钮区域 ========== */
     EVE_TAG_MASK(1);
@@ -1721,6 +1736,50 @@ void display_start_screen(void)
  * - 根据剩余时间显示秒或分钟
  * - 右侧显示导航箭头
  */
+#if USE_HOLD_MODE_NEW_SCREEN
+void show_bolus_time(uint16_t time_remaining)
+{
+    uint8_t t;  // 临时变量
+
+    begin_screen(default_config);
+    EVE_COLOR_RGB(48, 48, 48);  // 灰色
+
+    EVE_BEGIN(EVE_BEGIN_RECTS);
+    EVE_VERTEX2II(0, 0, 0, 0);
+    EVE_VERTEX2II(480, 60, 0, 0);
+
+    EVE_BEGIN(EVE_BEGIN_RECTS);
+    EVE_VERTEX2II(396, 64, 0, 0);
+    EVE_VERTEX2II(480, 272, 0, 0);
+    /* 设置文本颜色并显示标题 */
+    EVE_COLOR_RGB(WHITE_COLOR);
+    EVE_CMD_TEXT(200, 73, 30, EVE_OPT_CENTERX, "WATER DELIVERY");
+    EVE_CMD_TEXT(200, 119, 30, EVE_OPT_CENTERX,"TIME REMAINING");
+
+    /* 根据剩余时间显示不同单位 */
+    if (time_remaining < 60) {
+        // 小于1分钟：显示秒数
+        EVE_CMD_TEXT(268, 210, 30, 0, "SECONDS");
+        EVE_CMD_ROMFONT(1,34);
+        EVE_CMD_NUMBER(67, 157, 1, 0,time_remaining);
+    } else {
+        // 大于1分钟：转换为分钟显示
+        t = 1 + time_remaining / 60;
+        EVE_CMD_TEXT(268, 210, 30, 0, "MINUTES");
+        EVE_CMD_ROMFONT(1,34);
+        EVE_CMD_NUMBER(67, 157, 1, 0, t);
+    }
+
+    // 右箭头按钮（退出）
+    draw_right_arrow_22x34(426, 147);
+
+    /* 电池符号显示 */
+    draw_batt_symbol(G_v_battery);
+
+    /* 完成显示列表 */
+    end_screen();
+}
+#else
 void show_bolus_time(uint16_t time_remaining)
 {
     uint8_t t;  // 临时变量
@@ -1753,6 +1812,7 @@ void show_bolus_time(uint16_t time_remaining)
     /* 完成显示列表 */
     end_screen();
 }
+#endif
 /**************************************
  * show_bolus_time()
  * @detail
@@ -2519,9 +2579,9 @@ uint8_t setting_screen_task()
         EVE_CMD_TEXT(80, 20, 29, 0, "SETTINGS ");
 
         /* 设置文本颜色和标题 */
-        EVE_CMD_TEXT(15, 115, 27, 0, "DISPLAY BRIGHTNESS");
-        EVE_CMD_TEXT(15, 158, 27, 0, "VOLUME - ALARMS");
-        EVE_CMD_TEXT(15, 201, 27, 0, "VOLUME - ANNUNCIATIONS");
+        EVE_CMD_TEXT(15, 60, 27, 0, "DISPLAY BRIGHTNESS");
+        EVE_CMD_TEXT(15, 103, 27, 0, "VOLUME - ALARMS");
+        EVE_CMD_TEXT(15, 146, 27, 0, "VOLUME - ANNUNCIATIONS");
 
         /* 设置选项按钮 */
         EVE_COLOR_RGB(BLACK_COLOR);
@@ -2529,32 +2589,26 @@ uint8_t setting_screen_task()
         // 显示亮度设置
         set_fgcolor_for(G_display_brightness, COLUMN_0);
         EVE_TAG(DSP_BRG_LOW_TAG);
-        EVE_COLOR_RGB(WHITE_COLOR);
-        EVE_CMD_BUTTON(250,105,60,36,28,256,"LOW");
+        EVE_CMD_BUTTON(250,50,60,36,28,256,"LOW");
         set_fgcolor_for(G_display_brightness, COLUMN_1);
         EVE_TAG(DSP_BRG_HI_TAG);
-        EVE_COLOR_RGB(WHITE_COLOR);
-        EVE_CMD_BUTTON(320,105,60,36,28,256,"HIGH");
+        EVE_CMD_BUTTON(320,50,60,36,28,256,"HIGH");
 
         // 报警音量设置
         set_fgcolor_for(G_alarm_vol, COLUMN_0);
         EVE_TAG(ALARM_LOW_TAG);
-        EVE_COLOR_RGB(WHITE_COLOR);
-        EVE_CMD_BUTTON(250,148,60,36,28,256,"LOW");
+        EVE_CMD_BUTTON(250,93,60,36,28,256,"LOW");
         set_fgcolor_for(G_alarm_vol, COLUMN_1);
         EVE_TAG(ALARM_HI_TAG);
-        EVE_COLOR_RGB(WHITE_COLOR);
-        EVE_CMD_BUTTON(320,148,60,36,28,256,"HIGH");
+        EVE_CMD_BUTTON(320,93,60,36,28,256,"HIGH");
 
         // 提示音量设置
         set_fgcolor_for(G_warning_vol, COLUMN_0);
         EVE_TAG(ANN_LOW_TAG);
-        EVE_COLOR_RGB(WHITE_COLOR);
-        EVE_CMD_BUTTON(250,191,60,36,28,256,"LOW");
+        EVE_CMD_BUTTON(250,136,60,36,28,256,"LOW");
         set_fgcolor_for(G_warning_vol, COLUMN_1);
         EVE_TAG(ANN_HI_TAG);
-        EVE_COLOR_RGB(WHITE_COLOR);
-        EVE_CMD_BUTTON(320,191,60,36,28,256,"HIGH");
+        EVE_CMD_BUTTON(320,136,60,36,28,256,"HIGH");
 
         EVE_TAG(RIGHT_ARROW_TAG);
         EVE_COLOR_RGB(48, 48, 48);  // 灰色

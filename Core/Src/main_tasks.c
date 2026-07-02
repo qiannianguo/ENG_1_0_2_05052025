@@ -1643,7 +1643,7 @@ uint8_t run_mode_task()
             	                       // 连续两次检测（空气或非空都算）达到阈值，同时触发堵塞报警和气泡报警
             	                	   air_occlusion_in_line_screen();    // 堵塞报警
             	                               // 气泡报警
-
+            	                	   init_pause_related_params(&interval_control);
             	                       occlusion_confirmation_pending = 0;
             	                       occlusion_confirmation_count = 0;
             	                       usonic_mode_command = USONIC_MODE_DEFAULT;
@@ -1657,6 +1657,7 @@ uint8_t run_mode_task()
             	                if (occlusion_confirmation_count >= 2) {
             	                    // 连续两次检测都非空，确认为真实堵塞
             	                    occlusion_in_line_screen();
+            	                    init_pause_related_params(&interval_control);
             	                    usonic_mode_command = USONIC_MODE_DEFAULT;
             	                    occlusion_confirmation_pending = 0;
             	                    occlusion_confirmation_count = 0;
@@ -2515,8 +2516,9 @@ static uint8_t check_first_occlusion_test_start(dynamic_interval_control_t *inte
                                                 uint16_t *occl_timer,
                                                 uint32_t *last_processed_enter_time)
 {
-    // 如果已经处理过这次进入时间，直接返回
-    if (*last_processed_enter_time == interval_control->last_enter_time) {
+    // 如果已经处理过这次进入时间，并且已经进行过堵塞检测（次数>0），直接返回
+    if ((*last_processed_enter_time == interval_control->last_enter_time) &&
+        (interval_control->current_hour_tests > 0)) {
         return CONTINUE_RUNNING;
     }
 

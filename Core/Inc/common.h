@@ -630,7 +630,7 @@ typedef enum {
 #define MOTOR_INT_OCCL_TEST 482		//OCCL test motor interrupt 400mL/h, rate 16 (16mL/h)
 #define BASE_MOTOR_INT_FORMULA 341       //formula motor interrupt 565mL/h
 
-#define ONE_ML 1800   //1869 手工管
+#define ONE_ML 1818   //1869 手工管
 #else
 #define MOTOR_INT_BOLUS 257			//bolus run motor interrupt 750mL/h
 //#define MOTOR_INT_BOLUS 192			//bolus run motor interrupt 1000mL/h
