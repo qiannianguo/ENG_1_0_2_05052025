@@ -623,8 +623,8 @@ void run_mode_new_screen()
     /* ========== RATE区域 ========== */
     // "RATE" 文字 - 使用英文字体 ROBOTO REGULAR 35PT
     EVE_CMD_TEXT(23, 74, 30, 0, "RATE");
-    EVE_CMD_NUMBER(300, 74, 29, 0, G_time_cal.one_ml_corrected);
-    EVE_CMD_NUMBER(300, 120, 29, 0, running_volume);
+  //  EVE_CMD_NUMBER(300, 74, 29, 0, G_time_cal.one_ml_corrected);
+  //  EVE_CMD_NUMBER(300, 120, 29, 0, running_volume);
 
 
     // "mL/hr" 单位
@@ -1868,7 +1868,7 @@ void auto_primescreen(uint8_t set_ready, uint8_t priming)
     	EVE_COLOR_RGB(WHITE_COLOR);
     	draw_right_arrow_22x34(430, 207);
     }else{
-    	EVE_VERTEX2II(396, 67, 0, 0);
+    	EVE_VERTEX2II(396, 64, 0, 0);
     	EVE_VERTEX2II(480, 272, 0, 0);
     	EVE_COLOR_RGB(WHITE_COLOR);
     	draw_right_arrow_22x34(430, 152);

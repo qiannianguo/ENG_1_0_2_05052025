@@ -3028,23 +3028,20 @@ static uint8_t execute_hourly_reset_routine(dynamic_interval_control_t *interval
 
 
     pump_motor_off();
-    G_hour_volume = 0;
+
 #if(1)
     if(!interval_control->has_pause_this_period ){
         uint32_t wait_start = HAL_GetTick();
         uint32_t max_wait_ms = 3 * 60000;  // 最多等3分钟
     	while(1){
-    	// ===== 停止电机后，检查是否满足1小时 =====
-    		uint32_t current_time = HAL_GetTick();
-    		uint32_t elapsed_time = current_time - interval_control->hour_start_time;
+            uint32_t current_time = HAL_GetTick();
+            uint32_t elapsed_time = current_time - interval_control->hour_start_time;
 
-    		bool in_wait_zone1 =(elapsed_time > 54 * 60000 && elapsed_time <= 56*60000 );
-    		bool in_wait_zone2 = (elapsed_time > HOUR_DURATION_MS -MAX_WAIT_TIME_MS) && (elapsed_time <HOUR_DURATION_MS );
+            // ✅ 修改退出条件：必须满1小时或超时
+            if (elapsed_time >= HOUR_DURATION_MS) {
+                break;  // 满1小时才退出
+            }
 
-    	// 未满1小时，就在这里等待
-    	    if (!in_wait_zone1 && !in_wait_zone2) {
-    	        break;  // 不在等待区间，退出循环
-    	    }
             // 超时保护
             if ((current_time - wait_start) > max_wait_ms) {
             	if(G_food_rate >=5 ){
@@ -3079,6 +3076,7 @@ static uint8_t execute_hourly_reset_routine(dynamic_interval_control_t *interval
         }
     }
 #endif
+    G_hour_volume = 0;
     // 重置堵塞检测状态和计时器
     reset_occlusion_detection_state(occl_timer);
 
